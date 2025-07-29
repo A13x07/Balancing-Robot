@@ -3,5 +3,4 @@ The balancing robot is controlled using an ESP 32.
 Project in the simulator Wokwi can be found below:
 [https://wokwi.com/projects/424801262978532353](https://wokwi.com/projects/436708660174793729)
 
-![Balancing-Robot]((https://github.com/user-attachments/assets/4631f404-ba58-482b-a1a6-3cce1e6a8b2a))
-
+<img width="980" height="790" alt="image" src="https://github.com/user-attachments/assets/1baf4d4a-61ce-4913-9eb8-e874c0026381" />
