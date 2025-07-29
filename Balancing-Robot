@@ -1,0 +1,287 @@
+// Basic demo for accelerometer readings from Adafruit MPU6050
+
+#include <Adafruit_MPU6050.h>
+#include <Adafruit_Sensor.h>
+#include <Wire.h>
+#include <ESP32Servo.h>
+Adafruit_MPU6050 mpu;
+const int servoPin = 18;
+Servo servo;
+int rel = 25;
+int lD = 15, rD = 19;
+int lS = 17, rS = 23;
+int lMS = 4, rMS = 5;
+void setup(void) {
+  pinMode(rS, OUTPUT);
+  pinMode(rD, OUTPUT);
+  pinMode(lS, OUTPUT);
+  pinMode(lD, OUTPUT);
+  pinMode(lMS, OUTPUT);
+  pinMode(rMS, OUTPUT);
+  pinMode(rel, OUTPUT);
+  servo.attach(servoPin, 500, 2400);
+  Serial.begin(115200);
+  while (!Serial)
+    delay(10); // will pause Zero, Leonardo, etc until serial console opens
+
+  Serial.println("Adafruit MPU6050 test!");
+
+  // Try to initialize!
+  if (!mpu.begin()) {
+    Serial.println("Failed to find MPU6050 chip");
+    while (1) {
+      delay(10);
+    }
+  }
+  Serial.println("MPU6050 Found!");
+
+  mpu.setAccelerometerRange(MPU6050_RANGE_8_G);
+  Serial.print("Accelerometer range set to: ");
+  switch (mpu.getAccelerometerRange()) {
+  case MPU6050_RANGE_2_G:
+    Serial.println("+-2G");
+    break;
+  case MPU6050_RANGE_4_G:
+    Serial.println("+-4G");
+    break;
+  case MPU6050_RANGE_8_G:
+    Serial.println("+-8G");
+    break;
+  case MPU6050_RANGE_16_G:
+    Serial.println("+-16G");
+    break;
+  }
+  mpu.setGyroRange(MPU6050_RANGE_2000_DEG);
+  Serial.print("Gyro range set to: ");
+  switch (mpu.getGyroRange()) {
+  case MPU6050_RANGE_250_DEG:
+    Serial.println("+- 250 deg/s");
+    break;
+  case MPU6050_RANGE_500_DEG:
+    Serial.println("+- 500 deg/s");
+    break;
+  case MPU6050_RANGE_1000_DEG:
+    Serial.println("+- 1000 deg/s");
+    break;
+  case MPU6050_RANGE_2000_DEG:
+    Serial.println("+- 2000 deg/s");
+    break;
+  }
+
+  mpu.setFilterBandwidth(MPU6050_BAND_21_HZ);
+  Serial.print("Filter bandwidth set to: ");
+  switch (mpu.getFilterBandwidth()) {
+  case MPU6050_BAND_260_HZ:
+    Serial.println("260 Hz");
+    break;
+  case MPU6050_BAND_184_HZ:
+    Serial.println("184 Hz");
+    break;
+  case MPU6050_BAND_94_HZ:
+    Serial.println("94 Hz");
+    break;
+  case MPU6050_BAND_44_HZ:
+    Serial.println("44 Hz");
+    break;
+  case MPU6050_BAND_21_HZ:
+    Serial.println("21 Hz");
+    break;
+  case MPU6050_BAND_10_HZ:
+    Serial.println("10 Hz");
+    break;
+  case MPU6050_BAND_5_HZ:
+    Serial.println("5 Hz");
+    break;
+  }
+
+  Serial.println("");
+  delay(100);
+}
+void LtR(){
+  for (int pos = 180; pos >= 0; pos -= 1) {
+    servo.write(pos);
+    delay(15);
+  }
+}
+void RtL(){
+  for (int pos = 0; pos <= 180; pos += 1) {
+    servo.write(pos);
+    delay(15);
+  }
+}
+void Reset(){
+  servo.write(90);
+}
+bool check = true;
+/*
+lMS = 4, rMS = 5;
+rel = 25;
+lD = 15, rD = 19;
+lS = 17, rS = 23;
+DIR 19 and STEP 23
+DIR 15 and STEP 17
+
+lD LOW = forward
+rD HIGH = forward
+*/
+void Rot(int n, int d, int s){ //number of steps, delay between steps, status
+  switch (s){
+    case 1: //Both forward
+      digitalWrite(rel, HIGH);
+      digitalWrite(rD, HIGH);
+      digitalWrite(lD, LOW);
+      while(n--){
+        digitalWrite(rS, HIGH);
+        delay(d);
+        digitalWrite(rS, LOW);
+        delay(d);
+      }
+      break;
+    case 2: //Left forward
+      digitalWrite(lD, LOW);
+      digitalWrite(rel, LOW);
+      while(n--){
+        digitalWrite(lS, HIGH);
+        delay(d);
+        digitalWrite(lS, LOW);
+        delay(d);
+      }
+      break;
+    case 3: //Right forward
+      digitalWrite(rel, LOW);
+      digitalWrite(rD, HIGH);
+      while(n--){
+        digitalWrite(rS, HIGH);
+        delay(d);
+        digitalWrite(rS, LOW);
+        delay(d);
+      }
+      break;
+    case 4: //Both backward
+      digitalWrite(rel, HIGH);
+      digitalWrite(rD, LOW);
+      digitalWrite(lD, HIGH);
+      while(n--){
+        digitalWrite(rS, HIGH);
+        delay(d);
+        digitalWrite(rS, LOW);
+        delay(d);
+      }
+      break;
+    case 5: //Left backward
+      digitalWrite(lD, HIGH);
+      digitalWrite(rel, LOW);
+      while(n--){
+        digitalWrite(lS, HIGH);
+        delay(d);
+        digitalWrite(lS, LOW);
+        delay(d);
+      }
+      break;
+    case 6: //Right backword
+      digitalWrite(rel, LOW);
+      digitalWrite(rD, LOW);
+      while(n--){
+        digitalWrite(rS, HIGH);
+        delay(d);
+        digitalWrite(rS, LOW);
+        delay(d);
+      }
+      break;
+    case 7: //Left backward, Right forward
+      digitalWrite(lD, HIGH);
+      digitalWrite(rD, HIGH);
+      digitalWrite(rel, HIGH);
+      while(n--){
+        digitalWrite(rS, HIGH);
+        delay(d);
+        digitalWrite(rS, LOW);
+        delay(d);
+      }
+      break;
+    case 8: //Left forward, Right backward
+      digitalWrite(lD, LOW);
+      digitalWrite(rD, LOW);
+      digitalWrite(rel, HIGH);
+      while(n--){
+        digitalWrite(rS, HIGH);
+        delay(d);
+        digitalWrite(rS, LOW);
+        delay(d);
+      }
+      break;
+    case 9: //Both forward - Left further than right
+      digitalWrite(lD, LOW);
+      digitalWrite(rD, HIGH);
+      digitalWrite(rel, HIGH);
+      digitalWrite(rMS, HIGH);
+      while(n--){
+        digitalWrite(rS, HIGH);
+        delay(d);
+        digitalWrite(rS, LOW);
+        delay(d);
+      }
+      digitalWrite(rMS, LOW);
+      break;
+    case 10: //Both forward - Right further than left
+      digitalWrite(lD, LOW);
+      digitalWrite(rD, HIGH);
+      digitalWrite(rel, HIGH);
+      digitalWrite(lMS, HIGH);
+      while(n--){
+        digitalWrite(rS, HIGH);
+        delay(d);
+        digitalWrite(rS, LOW);
+        delay(d);
+      }
+      digitalWrite(lMS, LOW);
+      break;
+  }
+  check = false;
+}
+
+/*
+1. Both forward
+2. Left forward
+3. Right forward
+4. Both backward
+5. Left backward
+6. Right backward
+7. 3 & 5
+8. 2 & 6
+9. Both forward - Left further than right
+10. Both forward - Right further than left
+*/
+
+void loop() {
+  /* Get new sensor events with the readings */
+  sensors_event_t a, g, temp;
+  mpu.getEvent(&a, &g, &temp);
+  /* Print out the values */
+  Serial.print("Acceleration X: ");
+  Serial.print(a.acceleration.x);
+  Serial.print(", Y: ");
+  Serial.print(a.acceleration.y);
+  Serial.print(", Z: ");
+  Serial.print(a.acceleration.z);
+  Serial.println(" m/s^2");
+
+  Serial.print("Rotation X: ");
+  Serial.print(g.gyro.x);
+  Serial.print(", Y: ");
+  Serial.print(g.gyro.y);
+  Serial.print(", Z: ");
+  Serial.print(g.gyro.z);
+  Serial.println(" rad/s");
+
+  Serial.print("Temperature: ");
+  Serial.print(temp.temperature);
+  Serial.println(" degC");
+
+  Serial.println("");
+  delay(10);
+
+  if(check){
+    Rot(10, 100, 10);
+  }
+}
