@@ -11,3 +11,8 @@ Using the relay to connect both of the step motors to one port allows us to cont
 The Rot function takes in the number of steps, n, the delay between each step, d, and the status of the motor/s, s.
 The variable s, the status, let's us pick what the motors will do.  For example, when s is 3, the right step motor will rotate a wheel to go in the forward direction.
 The lower the delay, d, the faster the motor/s complete the given number of steps, n, with status s.
+
+
+
+
+<img width="1332" height="940" alt="image" src="https://github.com/user-attachments/assets/195e7e8e-7f57-430e-a283-af0ac05e9ab9" />
